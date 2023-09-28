@@ -18,13 +18,13 @@ if (project.hasProperty("tag")) {
   version = "develop"
 }
 
-var basePackage = "ml.empee.template"
+var basePackage = "ml.empee.plots"
 
 bukkit {
   load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
-  main = "${basePackage}.TemplatePlugin"
+  main = "${basePackage}.RentablePlots"
   apiVersion = "1.13"
-  depend = listOf("Vault")
+  depend = listOf()
   authors = listOf("Mr. EmPee")
 }
 
@@ -40,7 +40,6 @@ dependencies {
 
   compileOnly("org.jetbrains:annotations:24.0.1")
   compileOnly("org.xerial:sqlite-jdbc:3.34.0")
-  compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 
   // Core depends
   implementation("com.github.Mr-EmPee:LightWire:1.0.0")

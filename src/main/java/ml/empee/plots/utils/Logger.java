@@ -1,4 +1,4 @@
-package ml.empee.templateplugin.utils;
+package ml.empee.plots.utils;
 
 import lombok.AccessLevel;
 import lombok.Getter;

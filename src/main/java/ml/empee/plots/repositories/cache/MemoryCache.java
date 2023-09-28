@@ -1,4 +1,4 @@
-package ml.empee.templateplugin.repositories.cache;
+package ml.empee.plots.repositories.cache;
 
 import org.jetbrains.annotations.Nullable;
 

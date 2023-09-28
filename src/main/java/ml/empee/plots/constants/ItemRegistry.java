@@ -1,4 +1,4 @@
-package ml.empee.templateplugin.constants;
+package ml.empee.plots.constants;
 
 import org.bukkit.plugin.java.JavaPlugin;
 

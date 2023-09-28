@@ -1,4 +1,4 @@
-package ml.empee.templateplugin.config;
+package ml.empee.plots.config;
 
 import cloud.commandframework.annotations.AnnotationParser;
 import cloud.commandframework.arguments.parser.ArgumentParser;
@@ -11,7 +11,7 @@ import cloud.commandframework.execution.CommandExecutionCoordinator;
 import cloud.commandframework.meta.SimpleCommandMeta;
 import cloud.commandframework.paper.PaperCommandManager;
 import io.leangen.geantyref.TypeToken;
-import ml.empee.templateplugin.utils.Logger;
+import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;

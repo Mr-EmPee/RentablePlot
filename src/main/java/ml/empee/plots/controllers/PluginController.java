@@ -1,12 +1,12 @@
-package ml.empee.templateplugin.controllers;
+package ml.empee.plots.controllers;
 
 import org.bukkit.command.CommandSender;
 
 import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
 import lombok.RequiredArgsConstructor;
-import ml.empee.templateplugin.constants.Permissions;
-import ml.empee.templateplugin.utils.Logger;
+import ml.empee.plots.constants.Permissions;
+import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
 
 /**

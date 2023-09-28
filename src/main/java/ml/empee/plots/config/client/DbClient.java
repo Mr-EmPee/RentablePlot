@@ -1,8 +1,8 @@
-package ml.empee.templateplugin.config.client;
+package ml.empee.plots.config.client;
 
 import lombok.Getter;
 import lombok.SneakyThrows;
-import ml.empee.templateplugin.utils.Logger;
+import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;

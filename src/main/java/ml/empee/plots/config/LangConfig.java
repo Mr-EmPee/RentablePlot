@@ -1,4 +1,4 @@
-package ml.empee.templateplugin.config;
+package ml.empee.plots.config;
 
 import lombok.Getter;
 import mr.empee.lightwire.annotations.Instance;

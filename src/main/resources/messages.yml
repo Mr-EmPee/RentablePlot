@@ -6,3 +6,10 @@ cmd:
   invalid-sender: "&cInvalid sender type"
   invalid-argument: "&cInvalid argument, %s"
   unknown-exception: "&cAn error has occurred, inform a staff member"
+
+invitations:
+  self: "&cYou can't invite yourself!"
+  missing: "&cYou must receive an invitation!"
+  sent: "&7You have invited &e%s"
+  received: "&7Received invite to join the base of &e%s"
+  already-sent: "&cInvitation already sent!"

@@ -1,4 +1,4 @@
-package ml.empee.templateplugin.controllers.views;
+package ml.empee.plots.controllers.views;
 
 import org.bukkit.entity.Player;
 
