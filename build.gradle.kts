@@ -53,9 +53,10 @@ dependencies {
 
   // Utilities
   implementation("com.github.Mr-EmPee:SimpleMenu:0.0.6")
+  implementation("com.github.Mr-EmPee:ItemBuilder:1.1.2")
+
   //implementation("org.cloudburstmc:nbt:3.0.1.Final")
   //implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
-  //implementation("com.github.Mr-EmPee:ItemBuilder:1.1.2")
   //implementation("com.github.cryptomorin:XSeries:9.4.0") { isTransitive = false }
 }
 

@@ -6,4 +6,6 @@ package ml.empee.plots.controllers;
 
 public interface Controller {
     
+  String COMMAND_PREFIX = "rb|plot|plots|base|bases ";
+  
 }

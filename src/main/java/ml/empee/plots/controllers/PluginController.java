@@ -17,8 +17,8 @@ import mr.empee.lightwire.annotations.Singleton;
 @RequiredArgsConstructor
 public class PluginController implements Controller {
 
-  @CommandMethod("template reload")
   @CommandPermission(Permissions.ADMIN)
+  @CommandMethod(COMMAND_PREFIX + "reload")
   public void reload(CommandSender sender) {
     Logger.log(sender, "&7The plugin has been reloaded");
   }
