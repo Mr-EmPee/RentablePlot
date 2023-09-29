@@ -1,19 +1,18 @@
 package ml.empee.plots.config.client;
 
-import lombok.Getter;
-import lombok.SneakyThrows;
-import ml.empee.plots.utils.Logger;
-import mr.empee.lightwire.annotations.Singleton;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+
+import org.bukkit.plugin.java.JavaPlugin;
+
+import lombok.Getter;
+import lombok.SneakyThrows;
+import ml.empee.plots.utils.Logger;
+import mr.empee.lightwire.annotations.Singleton;
 
 /**
  * Database client
@@ -22,22 +21,8 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class DbClient {
 
-  private static final ThreadFactory threadFactory = new ThreadFactory() {
-    @Override
-    public Thread newThread(@NotNull Runnable r) {
-      return new Thread(() -> {
-        try {
-          r.run();
-        } catch (Exception e) {
-          Logger.error("Error while performing db operation");
-          e.printStackTrace();
-        }
-      }, "database");
-    }
-  };
-
   @Getter
-  private final ExecutorService threadPool = Executors.newFixedThreadPool(1, threadFactory);
+  private final ExecutorService threadPool = Executors.newFixedThreadPool(1);
   private final String dbUrl;
 
   private Connection jdbcConnection;
