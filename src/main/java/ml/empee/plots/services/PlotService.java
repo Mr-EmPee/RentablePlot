@@ -3,6 +3,7 @@ package ml.empee.plots.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -32,6 +33,9 @@ public class PlotService {
     var plot = Plot.builder()
         .start(start)
         .end(end)
+        .hologramLocation(hologram)
+        .owner(Optional.empty())
+        .expireTime(0L)
         .members(Collections.emptyList())
         .chests(Collections.emptyMap())
         .build();
@@ -41,7 +45,7 @@ public class PlotService {
 
   public void claimPlot(Plot plot, UUID owner, Long expireTime) {
     plotCache.save(
-        plot.withOwner(owner)
+        plot.withOwner(Optional.of(owner))
             .withExpireTime(expireTime)
     );
   }

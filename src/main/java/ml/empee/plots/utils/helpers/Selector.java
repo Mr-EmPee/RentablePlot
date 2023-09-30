@@ -47,7 +47,7 @@ public class Selector {
     }
 
     public boolean isValid() {
-      return start != null && end != null;
+      return start != null && end != null && start.getWorld().equals(end.getWorld());
     }
   }
   
