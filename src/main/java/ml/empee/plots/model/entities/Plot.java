@@ -3,9 +3,11 @@ package ml.empee.plots.model.entities;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Location;
+import org.jetbrains.annotations.Nullable;
 
 import lombok.Builder;
 import lombok.Value;
@@ -25,10 +27,12 @@ public class Plot {
   Location start;
   Location end;
 
-  UUID owner;
-  List<UUID> members;
+  Location hologramLocation;
 
+  Optional<UUID> owner;
   Long expireTime;
+
+  List<UUID> members;
   Map<UUID, Integer> chests;
 
   public List<UUID> getMembers() {

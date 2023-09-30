@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,9 +36,10 @@ public class PlotRepository {
     query += "  start TEXT NOT NULL,";
     query += "  end TEXT NOT NULL,";
     query += "  owner TEXT,";
-    query += "  members TEXT,";
-    query += "  expireTime INTEGER,";
-    query += "  chests TEXT";
+    query += "  members TEXT NOT NULL,";
+    query += "  expireTime INTEGER NOT NULL,";
+    query += "  chests TEXT NOT NULL,";
+    query += "  hologramLocation TEXT NOT NULL";
     query += ");";
 
     try (var stm = client.getJdbcConnection().createStatement()) {
@@ -72,17 +74,18 @@ public class PlotRepository {
     return CompletableFuture.runAsync(() -> {
       var query = "";
       query += "INSERT OR REPLACE INTO plots (";
-      query += "  id, start, end, owner, members, expireTime, chests";
-      query += ") VALUES (?, ?, ?, ?, ?, ?, ?);";
+      query += "  id, start, end, owner, members, expireTime, chests, hologramLocation";
+      query += ") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
 
       try (var stm = client.getJdbcConnection().prepareStatement(query)) {
         stm.setLong(1, data.getId());
         stm.setString(2, ObjectConverter.parseLocation(data.getStart()));
         stm.setString(3, ObjectConverter.parseLocation(data.getEnd()));
-        stm.setString(4, data.getOwner() == null ? null : data.getOwner().toString());
-        stm.setString(5, data.getMembers() == null ? null : ObjectConverter.parseCollection(data.getMembers(), UUID::toString));
+        stm.setString(4, data.getOwner().isEmpty() ? null : data.getOwner().toString());
+        stm.setString(5, ObjectConverter.parseCollection(data.getMembers(), UUID::toString));
         stm.setLong(6, data.getExpireTime());
-        stm.setString(7, data.getChests() == null ? null : ObjectConverter.parseMap(data.getChests(), UUID::toString, Object::toString));
+        stm.setString(7, ObjectConverter.parseMap(data.getChests(), UUID::toString, Object::toString));
+        stm.setString(8, ObjectConverter.parseLocation(data.getHologramLocation()));
         stm.executeUpdate();
       } catch (SQLException e) {
         throw new RuntimeException(e);
@@ -99,14 +102,16 @@ public class PlotRepository {
     var members = rs.getString("members");
     var expireTime = rs.getLong("expireTime");
     var chests = rs.getString("chests");
+    var hologramLocation = rs.getString("hologramLocation");
 
     return Plot.builder()
         .id(id)
         .start(ObjectConverter.parseLocation(start))
         .end(ObjectConverter.parseLocation(end))
-        .owner(owner == null ? null : UUID.fromString(owner))
-        .members(members == null ? null : ObjectConverter.parseCollection(members, UUID::fromString))
-        .chests(chests == null ? null : ObjectConverter.parseMap(chests, UUID::fromString, Integer::parseInt))
+        .hologramLocation(ObjectConverter.parseLocation(hologramLocation))
+        .owner(owner == null ? Optional.empty() : Optional.of(UUID.fromString(owner)))
+        .members(ObjectConverter.parseCollection(members, UUID::fromString))
+        .chests(ObjectConverter.parseMap(chests, UUID::fromString, Integer::parseInt))
         .expireTime(expireTime)
         .build();
   }
