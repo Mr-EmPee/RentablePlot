@@ -49,6 +49,7 @@ public class PlotService {
     Bukkit.getScheduler().runTaskTimer(plugin, t -> {
       for (var plot : plotCache.findAll()) {
         if (plot.isClaimed() && plot.isExpired()) {
+          unclaim(plot.getId());
           Bukkit.getPluginManager().callEvent(new PlotExpireEvent(plot));
         }
       }
@@ -59,8 +60,9 @@ public class PlotService {
     return selectionHandler.getSelector().getSelection(player);
   }
 
-  public void moveHologram(Plot plot, Location location) {
-    hologramHandler.moveHologram(plot.getId(), location);
+  public void moveHologram(Long plotId, Location location) {
+    var plot = findById(plotId).orElseThrow();
+    hologramHandler.moveHologram(plotId, location);
     plotCache.save(plot.withHologramLocation(location));
   }
 
@@ -110,6 +112,17 @@ public class PlotService {
     var plot = findById(plotId).orElseThrow();
     plot = plotCache.save(plot.withOwner(Optional.of(owner)));
     Bukkit.getPluginManager().callEvent(new PlotClaimEvent(plot));
+  }
+
+  public void unclaim(Long plotId) {
+    var plot = findById(plotId).orElseThrow();
+
+    plotCache.save(
+        plot.withOwner(Optional.empty())
+            .withSecondsExpireEpoch(0L)
+            .withMembers(Collections.emptyList())
+            .withChests(Collections.emptyMap())
+    );
   }
 
   public void addMember(Long plotId, UUID member) {

@@ -61,7 +61,7 @@ public class PlotController implements Controller {
       return;
     }
 
-    plotService.moveHologram(plot, new Location(sender.getWorld(), x, y, z));
+    plotService.moveHologram(plot.getId(), new Location(sender.getWorld(), x, y, z));
     Logger.log(sender, "&aHologram moved");
   }
 
