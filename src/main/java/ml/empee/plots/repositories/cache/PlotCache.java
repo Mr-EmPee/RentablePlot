@@ -1,5 +1,7 @@
 package ml.empee.plots.repositories.cache;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.TreeMap;
 
@@ -28,9 +30,15 @@ public class PlotCache {
     );
   }
 
+  public Collection<Plot> findAll() {
+    return Collections.unmodifiableCollection(plots.values());
+  }
+
   public Plot save(Plot plot) {
     if (plot.getId() == null) {
-      plot = plot.withId(plots.lastKey() + 1);
+      plot = plot.withId(
+        plots.isEmpty() ? 0L : plots.lastKey() + 1
+      );
     }
 
     plots.put(plot.getId(), plot);
