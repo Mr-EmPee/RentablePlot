@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import ml.empee.plots.constants.ItemRegistry;
 import ml.empee.plots.constants.Permissions;
 import ml.empee.plots.services.PlotService;
+import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
 
 /**
@@ -38,6 +39,7 @@ public class PlotSelectionHandler implements Listener {
       return;
     }
 
+    Logger.log(event.getPlayer(), "&aPlot corner selected");
     plotService.getPlotSelector().select(event.getPlayer().getUniqueId(), event.getClickedBlock().getLocation());
   }
   
