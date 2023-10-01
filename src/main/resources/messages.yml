@@ -21,6 +21,7 @@ coin:
 plot:
   not-member: "&cYou are not a member of this plot!"
   claimed: "&7The plot has been claimed"
+  expired: "&cThe plot has expired"
   rent:
     add: "&7You have added &e%1$d&7h to the rent"
 

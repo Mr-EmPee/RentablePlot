@@ -82,8 +82,12 @@ public class PlotHologramHandler implements Listener {
   private void refreshHolograms() {
     holograms.forEach((plotId, hologram) -> {
       var plot = plotService.findById(plotId).orElseThrow();
-      if (plot.isClaimed() && !plot.isExpired()) {
+      if (plot.isClaimed()) {
         var expireTime = Duration.between(Instant.now(), Instant.ofEpochSecond(plot.getSecondsExpireEpoch()));
+        if (plot.isExpired()) {
+          expireTime = Duration.ZERO;
+        }
+        
         var placeholders = new Object[] {
             Bukkit.getOfflinePlayer(plot.getOwner().get()).getName(),
             1, 5,

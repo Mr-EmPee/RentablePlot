@@ -1,6 +1,7 @@
 package ml.empee.plots.services;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -12,11 +13,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import ml.empee.plots.config.LangConfig;
 import ml.empee.plots.constants.ItemRegistry;
+import ml.empee.plots.handlers.PlotExpirationHandler;
 import ml.empee.plots.handlers.PlotHologramHandler;
 import ml.empee.plots.handlers.PlotSelectionHandler;
 import ml.empee.plots.model.entities.Plot;
-import ml.empee.plots.model.events.PlotClaimEvent;
-import ml.empee.plots.model.events.PlotExpireEvent;
 import ml.empee.plots.repositories.cache.PlotCache;
 import ml.empee.plots.utils.helpers.Selector.Selection;
 import mr.empee.lightwire.annotations.Singleton;
@@ -31,6 +31,7 @@ public class PlotService {
   private final PlotCache plotCache;
   private final PlotHologramHandler hologramHandler;
   private final PlotSelectionHandler selectionHandler;
+  private final PlotExpirationHandler expirationHandler;
 
   /**
    * Create a new PlotService
@@ -39,21 +40,17 @@ public class PlotService {
     this.plotCache = plotCache;
 
     this.hologramHandler = new PlotHologramHandler(plugin, langConfig, this);
+    this.expirationHandler = new PlotExpirationHandler(plugin, langConfig, this);
     this.selectionHandler = new PlotSelectionHandler(itemRegistry);
-
+    
     plotCache.findAll().forEach(plot -> hologramHandler.spawnHologram(plot.getId(), plot.getHologramLocation()));
 
     Bukkit.getPluginManager().registerEvents(hologramHandler, plugin);
     Bukkit.getPluginManager().registerEvents(selectionHandler, plugin);
+  }
 
-    Bukkit.getScheduler().runTaskTimer(plugin, t -> {
-      for (var plot : plotCache.findAll()) {
-        if (plot.isClaimed() && plot.isExpired()) {
-          unclaim(plot.getId());
-          Bukkit.getPluginManager().callEvent(new PlotExpireEvent(plot));
-        }
-      }
-    }, 0, 20 * 10);
+  public Collection<Plot> findAll() {
+    return plotCache.findAll();
   }
 
   public Optional<Selection> getSelection(UUID player) {
@@ -110,8 +107,7 @@ public class PlotService {
 
   public void claim(Long plotId, UUID owner) {
     var plot = findById(plotId).orElseThrow();
-    plot = plotCache.save(plot.withOwner(Optional.of(owner)));
-    Bukkit.getPluginManager().callEvent(new PlotClaimEvent(plot));
+    plotCache.save(plot.withOwner(Optional.of(owner)));
   }
 
   public void unclaim(Long plotId) {
