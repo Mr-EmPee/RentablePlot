@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
-import org.jetbrains.annotations.Nullable;
 
 import lombok.Builder;
 import lombok.Value;
@@ -30,7 +30,7 @@ public class Plot {
   Location hologramLocation;
 
   Optional<UUID> owner;
-  Long expireTime;
+  Long secondsExpireEpoch;
 
   List<UUID> members;
   Map<UUID, Integer> chests;
@@ -41,6 +41,18 @@ public class Plot {
 
   public Map<UUID, Integer> getChests() {
     return Collections.unmodifiableMap(chests);
+  }
+
+  public boolean isMember(UUID player) {
+    return owner.map(o -> o.equals(player)).orElse(false) || members.contains(player);
+  }
+
+  public boolean isClaimed() {
+    return owner.isPresent();
+  }
+
+  public boolean isExpired() {
+    return TimeUnit.SECONDS.toMillis(secondsExpireEpoch) <= System.currentTimeMillis();
   }
 
   public Location getStart() {

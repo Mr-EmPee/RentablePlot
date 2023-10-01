@@ -81,9 +81,9 @@ public class PlotRepository {
         stm.setLong(1, data.getId());
         stm.setString(2, ObjectConverter.parseLocation(data.getStart()));
         stm.setString(3, ObjectConverter.parseLocation(data.getEnd()));
-        stm.setString(4, data.getOwner().isEmpty() ? null : data.getOwner().toString());
+        stm.setString(4, data.getOwner().isEmpty() ? null : data.getOwner().get().toString());
         stm.setString(5, ObjectConverter.parseCollection(data.getMembers(), UUID::toString));
-        stm.setLong(6, data.getExpireTime());
+        stm.setLong(6, data.getSecondsExpireEpoch());
         stm.setString(7, ObjectConverter.parseMap(data.getChests(), UUID::toString, Object::toString));
         stm.setString(8, ObjectConverter.parseLocation(data.getHologramLocation()));
         stm.executeUpdate();
@@ -112,7 +112,7 @@ public class PlotRepository {
         .owner(owner == null ? Optional.empty() : Optional.of(UUID.fromString(owner)))
         .members(ObjectConverter.parseCollection(members, UUID::fromString))
         .chests(ObjectConverter.parseMap(chests, UUID::fromString, Integer::parseInt))
-        .expireTime(expireTime)
+        .secondsExpireEpoch(expireTime)
         .build();
   }
 

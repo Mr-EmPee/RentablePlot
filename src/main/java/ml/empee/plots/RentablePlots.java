@@ -31,7 +31,6 @@ public final class RentablePlots extends JavaPlugin {
     iocContainer.loadBeans(getClass().getPackage());
 
     loadPrefix();
-    registerListeners();
     registerCommands();
   }
 
@@ -44,12 +43,6 @@ public final class RentablePlots extends JavaPlugin {
     var commandManager = iocContainer.getBean(CommandsConfig.class);
     iocContainer.getAllBeans(Controller.class).forEach(
         c -> commandManager.register(c)
-    );
-  }
-
-  private void registerListeners() {
-    iocContainer.getAllBeans(Listener.class).forEach(
-        l -> getServer().getPluginManager().registerEvents(l, this)
     );
   }
 
