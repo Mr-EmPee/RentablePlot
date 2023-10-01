@@ -24,7 +24,7 @@ bukkit {
   load = BukkitPluginDescription.PluginLoadOrder.POSTWORLD
   main = "${basePackage}.RentablePlots"
   apiVersion = "1.13"
-  depend = listOf()
+  depend = listOf("DecentHolograms")
   authors = listOf("Mr. EmPee")
 }
 
@@ -41,6 +41,9 @@ dependencies {
   compileOnly("org.jetbrains:annotations:24.0.1")
   compileOnly("org.xerial:sqlite-jdbc:3.34.0")
 
+
+  compileOnly("com.github.decentsoftware-eu:decentholograms:2.8.4")
+
   // Core depends
   implementation("com.github.Mr-EmPee:LightWire:1.0.0")
 
@@ -54,10 +57,10 @@ dependencies {
   // Utilities
   implementation("com.github.Mr-EmPee:SimpleMenu:0.0.6")
   implementation("com.github.Mr-EmPee:ItemBuilder:1.1.2")
+  implementation("com.github.cryptomorin:XSeries:9.4.0") { isTransitive = false }
 
   //implementation("org.cloudburstmc:nbt:3.0.1.Final")
   //implementation("com.github.Mr-EmPee:SimpleHeraut:1.0.1")
-  //implementation("com.github.cryptomorin:XSeries:9.4.0") { isTransitive = false }
 }
 
 tasks {
@@ -88,12 +91,12 @@ tasks {
   }
 
   runServer {
-    version.set("1.13.2")
+    version.set("1.19.4")
   }
 }
 
 java {
   toolchain {
-    languageVersion.set(JavaLanguageVersion.of(11))
+    languageVersion.set(JavaLanguageVersion.of(17))
   }
 }
