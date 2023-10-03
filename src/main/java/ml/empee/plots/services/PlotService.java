@@ -16,8 +16,9 @@ import ml.empee.plots.constants.ItemRegistry;
 import ml.empee.plots.handlers.PlotExpirationHandler;
 import ml.empee.plots.handlers.PlotHologramHandler;
 import ml.empee.plots.handlers.PlotSelectionHandler;
+import ml.empee.plots.handlers.PlotChestHandler;
 import ml.empee.plots.model.entities.Plot;
-import ml.empee.plots.repositories.cache.PlotCache;
+import ml.empee.plots.repositories.memory.PlotMemoryCache;
 import ml.empee.plots.utils.helpers.Selector.Selection;
 import mr.empee.lightwire.annotations.Singleton;
 
@@ -28,7 +29,7 @@ import mr.empee.lightwire.annotations.Singleton;
 @Singleton
 public class PlotService {
 
-  private final PlotCache plotCache;
+  private final PlotMemoryCache plotCache;
   private final PlotHologramHandler hologramHandler;
   private final PlotSelectionHandler selectionHandler;
   private final PlotExpirationHandler expirationHandler;
@@ -36,13 +37,13 @@ public class PlotService {
   /**
    * Create a new PlotService
    */
-  public PlotService(JavaPlugin plugin, ItemRegistry itemRegistry, PlotCache plotCache, LangConfig langConfig) {
+  public PlotService(JavaPlugin plugin, ItemRegistry itemRegistry, PlotMemoryCache plotCache, LangConfig langConfig) {
     this.plotCache = plotCache;
 
     this.hologramHandler = new PlotHologramHandler(plugin, langConfig, this);
     this.expirationHandler = new PlotExpirationHandler(plugin, langConfig, this);
     this.selectionHandler = new PlotSelectionHandler(itemRegistry);
-    
+
     plotCache.findAll().forEach(plot -> hologramHandler.spawnHologram(plot.getId(), plot.getHologramLocation()));
 
     Bukkit.getPluginManager().registerEvents(hologramHandler, plugin);
@@ -76,23 +77,16 @@ public class PlotService {
         .findFirst();
   }
 
-  /**
-   * Create a plot
-   */
   public Plot create(Location hologramLocation, Location start, Location end) {
-    var plot = Plot.builder()
-        .start(start)
-        .end(end)
-        .hologramLocation(hologramLocation)
-        .owner(Optional.empty())
-        .secondsExpireEpoch(0L)
-        .members(Collections.emptyList())
-        .chests(Collections.emptyMap())
-        .build();
+    var plot = plotCache.save(
+        Plot.builder()
+            .start(start)
+            .end(end)
+            .hologramLocation(hologramLocation)
+            .build()
+    );
 
-    plot = plotCache.save(plot);
     hologramHandler.spawnHologram(plot.getId(), plot.getHologramLocation());
-
     return plot;
   }
 
@@ -117,8 +111,7 @@ public class PlotService {
         plot.withOwner(Optional.empty())
             .withSecondsExpireEpoch(0L)
             .withMembers(Collections.emptyList())
-            .withChests(Collections.emptyMap())
-    );
+            .withChests(Collections.emptyMap()));
   }
 
   public void addMember(Long plotId, UUID member) {

@@ -39,7 +39,7 @@ public class PluginItem {
    * Check if an itemStack is the custom item
    */
   public boolean isPluginItem(@Nullable ItemStack item, boolean ignoreVersion) {
-    if(item == null || !item.hasItemMeta()) {
+    if (item == null || !item.hasItemMeta()) {
       return false;
     }
 

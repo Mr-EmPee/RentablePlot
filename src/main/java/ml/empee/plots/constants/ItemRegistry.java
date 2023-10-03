@@ -1,6 +1,5 @@
 package ml.empee.plots.constants;
 
-import org.bukkit.Material;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.cryptomorin.xseries.XMaterial;

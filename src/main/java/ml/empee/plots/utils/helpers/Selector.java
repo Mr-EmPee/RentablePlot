@@ -1,12 +1,10 @@
 package ml.empee.plots.utils.helpers;
 
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

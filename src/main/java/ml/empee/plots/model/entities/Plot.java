@@ -17,23 +17,28 @@ import lombok.With;
  * Immutable Plot entity
  */
 
-@Value
 @With
+@Value
 @Builder
-public class Plot {
+public class Plot implements Entity {
 
   Long id;
 
   Location start;
   Location end;
-
   Location hologramLocation;
 
-  Optional<UUID> owner;
-  Long secondsExpireEpoch;
+  @Builder.Default
+  Optional<UUID> owner = Optional.empty();
 
-  List<UUID> members;
-  Map<UUID, Integer> chests;
+  @Builder.Default
+  Long secondsExpireEpoch = 0L;
+
+  @Builder.Default
+  List<UUID> members = Collections.emptyList();
+
+  @Builder.Default
+  Map<UUID, Integer> chests = Collections.emptyMap();
 
   public List<UUID> getMembers() {
     return Collections.unmodifiableList(members);
