@@ -1,26 +1,24 @@
 package ml.empee.plots.services;
 
+import ml.empee.plots.config.LangConfig;
+import ml.empee.plots.constants.ItemRegistry;
+import ml.empee.plots.handlers.PlotExpirationHandler;
+import ml.empee.plots.handlers.PlotHologramHandler;
+import ml.empee.plots.handlers.PlotSelectionHandler;
+import ml.empee.plots.model.entities.Plot;
+import ml.empee.plots.repositories.memory.PlotMemoryCache;
+import ml.empee.plots.utils.helpers.Selector.Selection;
+import mr.empee.lightwire.annotations.Singleton;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import ml.empee.plots.config.LangConfig;
-import ml.empee.plots.constants.ItemRegistry;
-import ml.empee.plots.handlers.PlotExpirationHandler;
-import ml.empee.plots.handlers.PlotHologramHandler;
-import ml.empee.plots.handlers.PlotSelectionHandler;
-import ml.empee.plots.handlers.PlotChestHandler;
-import ml.empee.plots.model.entities.Plot;
-import ml.empee.plots.repositories.memory.PlotMemoryCache;
-import ml.empee.plots.utils.helpers.Selector.Selection;
-import mr.empee.lightwire.annotations.Singleton;
 
 /**
  * Service layer for plots
@@ -58,10 +56,10 @@ public class PlotService {
     return selectionHandler.getSelector().getSelection(player);
   }
 
-  public void moveHologram(Long plotId, Location location) {
+  public Plot moveHologram(Long plotId, Location location) {
     var plot = findById(plotId).orElseThrow();
     hologramHandler.moveHologram(plotId, location);
-    plotCache.save(plot.withHologramLocation(location));
+    return plotCache.save(plot.withHologramLocation(location));
   }
 
   public Optional<Plot> findByLocation(Location location) {
@@ -90,60 +88,61 @@ public class PlotService {
     return plot;
   }
 
-  public void setExpiration(Long plotId, Long secondsExpireEpoch) {
+  public Plot setExpiration(Long plotId, Long secondsExpireEpoch) {
     var plot = findById(plotId).orElseThrow();
     if (plot.getOwner().isEmpty()) {
       throw new IllegalArgumentException("Plot must be claimed");
     }
 
-    plotCache.save(plot.withSecondsExpireEpoch(secondsExpireEpoch));
+    return plotCache.save(plot.withSecondsExpireEpoch(secondsExpireEpoch));
   }
 
-  public void claim(Long plotId, UUID owner) {
+  public Plot claim(Long plotId, UUID owner) {
     var plot = findById(plotId).orElseThrow();
-    plotCache.save(plot.withOwner(Optional.of(owner)));
+    return plotCache.save(plot.withOwner(Optional.of(owner)));
   }
 
-  public void unclaim(Long plotId) {
+  public Plot unclaim(Long plotId) {
     var plot = findById(plotId).orElseThrow();
 
-    plotCache.save(
+    return plotCache.save(
         plot.withOwner(Optional.empty())
             .withSecondsExpireEpoch(0L)
             .withMembers(Collections.emptyList())
-            .withChests(Collections.emptyMap()));
+            .withChests(Collections.emptyMap())
+    );
   }
 
-  public void addMember(Long plotId, UUID member) {
+  public Plot addMember(Long plotId, UUID member) {
     var plot = findById(plotId).orElseThrow();
     var members = new ArrayList<>(plot.getMembers());
     members.add(member);
 
-    plotCache.save(plot.withMembers(members));
+    return plotCache.save(plot.withMembers(members));
   }
 
-  public void removeMember(Long plotId, UUID member) {
+  public Plot removeMember(Long plotId, UUID member) {
     var plot = findById(plotId).orElseThrow();
     var members = new ArrayList<>(plot.getMembers());
     members.remove(member);
 
-    plotCache.save(plot.withMembers(members));
+    return plotCache.save(plot.withMembers(members));
   }
 
-  public void addChest(Long plotId, UUID player) {
+  public Plot addChest(Long plotId, UUID player) {
     var plot = findById(plotId).orElseThrow();
     var chests = new HashMap<>(plot.getChests());
     chests.compute(player, (k, v) -> v == null ? 1 : v + 1);
 
-    plotCache.save(plot.withChests(chests));
+    return plotCache.save(plot.withChests(chests));
   }
 
-  public void removeChest(Long plotId, UUID player) {
+  public Plot removeChest(Long plotId, UUID player) {
     var plot = findById(plotId).orElseThrow();
     var chests = new HashMap<>(plot.getChests());
     chests.compute(player, (k, v) -> v == null ? 0 : v - 1);
 
-    plotCache.save(plot.withChests(chests));
+    return plotCache.save(plot.withChests(chests));
   }
 
 }
