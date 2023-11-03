@@ -50,4 +50,8 @@ public class PlotAPI {
     return plotService.findById(plotId).orElseThrow().isClaimed();
   }
 
+  public boolean isPlotCoin(ItemStack item) {
+    return itemRegistry.plotCoin().isPluginItem(item);
+  }
+
 }

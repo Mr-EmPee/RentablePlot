@@ -28,7 +28,7 @@ public class PlotRentMenu {
   @Instance
   private static PlotRentMenu instance;
 
-  private final PlotAPI plotCommand;
+  private final PlotAPI plotAPI;
 
   private final LangConfig langConfig;
 
@@ -70,12 +70,18 @@ public class PlotRentMenu {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-      if (event.getSlot() == 4) {
-        return;
-      }
+      if (event.getClickedInventory() != null) {
+        boolean isPlayerInventory = event.getClickedInventory().getType() == InventoryType.PLAYER;
 
-      if (event.getClickedInventory() != null && event.getClickedInventory().getType() == InventoryType.PLAYER) {
-        return;
+        if (!isPlayerInventory) {
+          if (event.getSlot() == 4) {
+            return;
+          }
+        } else {
+          if (plotAPI.isPlotCoin(event.getCurrentItem())) {
+            return;
+          }
+        }
       }
 
       event.setCancelled(true);
@@ -93,13 +99,13 @@ public class PlotRentMenu {
         return;
       }
 
-      var secondsBought = plotCommand.convertCoinsToSeconds(coins);
-      if (plotCommand.isPlotClaimed(plotId)) {
-        plotCommand.addRent(plotId, secondsBought);
+      var secondsBought = plotAPI.convertCoinsToSeconds(coins);
+      if (plotAPI.isPlotClaimed(plotId)) {
+        plotAPI.addRent(plotId, secondsBought);
         Logger.log(player, langConfig.translate("plot.rent.add", TimeUnit.SECONDS.toHours(secondsBought)));
       } else {
-        plotCommand.claimPlot(plotId, player.getUniqueId());
-        plotCommand.addRent(plotId, secondsBought);
+        plotAPI.claimPlot(plotId, player.getUniqueId());
+        plotAPI.addRent(plotId, secondsBought);
         Logger.log(player, langConfig.translate("plot.claimed"));
       }
 
