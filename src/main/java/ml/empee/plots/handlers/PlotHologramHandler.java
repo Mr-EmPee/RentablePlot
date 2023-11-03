@@ -24,7 +24,7 @@ import ml.empee.plots.services.PlotService;
 import ml.empee.plots.utils.Logger;
 
 /**
- * Hologram manager for plots
+ * Manage plot holograms and periodically refresh the text
  */
 
 public class PlotHologramHandler implements Listener {

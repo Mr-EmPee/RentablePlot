@@ -8,7 +8,7 @@ import ml.empee.plots.services.PlotService;
 import ml.empee.plots.utils.Logger;
 
 /**
- * Handler for plot expiration
+ * Periodically check and unclaim expired plots
  */
 
 public class PlotExpirationHandler {
