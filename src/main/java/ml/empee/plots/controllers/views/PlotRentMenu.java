@@ -10,6 +10,7 @@ import ml.empee.simplemenu.model.GItem;
 import ml.empee.simplemenu.model.menus.DispenserMenu;
 import mr.empee.lightwire.annotations.Instance;
 import mr.empee.lightwire.annotations.Singleton;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -70,17 +71,21 @@ public class PlotRentMenu {
 
     @Override
     public void onClick(InventoryClickEvent event) {
-      if (event.getClickedInventory() != null) {
-        boolean isPlayerInventory = event.getClickedInventory().getType() == InventoryType.PLAYER;
+      if (event.getSlotType() == InventoryType.SlotType.OUTSIDE) {
+        return;
+      }
 
-        if (!isPlayerInventory) {
-          if (event.getSlot() == 4) {
-            return;
-          }
-        } else {
-          if (plotAPI.isPlotCoin(event.getCurrentItem())) {
-            return;
-          }
+      boolean isPlayerInventory = event.getClickedInventory().getType() == InventoryType.PLAYER;
+
+      if (!isPlayerInventory) {
+        if (event.getSlot() == 4) {
+          return;
+        }
+      } else {
+        boolean isAir = event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR;
+        boolean isCoin = plotAPI.isPlotCoin(event.getCurrentItem());
+        if (isCoin || isAir) {
+          return;
         }
       }
 
@@ -94,18 +99,18 @@ public class PlotRentMenu {
 
     @Override
     public void onClose() {
-      var coins = getContent(0, 0).orElse(null);
+      var coins = getContent(1, 1).orElse(null);
       if (coins == null) {
         return;
       }
 
+      var plot = plotAPI.getPlot(plotId).orElseThrow();
       var secondsBought = plotAPI.convertCoinsToSeconds(coins);
-      if (plotAPI.isPlotClaimed(plotId)) {
-        plotAPI.addRent(plotId, secondsBought);
+      if (plot.isClaimed()) {
+        plotAPI.setRent(plotId, plot.getOwner().orElseThrow(), plot.getExpireEpoch() + TimeUnit.SECONDS.toMillis(secondsBought));
         Logger.log(player, langConfig.translate("plot.rent.add", TimeUnit.SECONDS.toHours(secondsBought)));
       } else {
-        plotAPI.claimPlot(plotId, player.getUniqueId());
-        plotAPI.addRent(plotId, secondsBought);
+        plotAPI.setRent(plotId, player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(secondsBought));
         Logger.log(player, langConfig.translate("plot.claimed"));
       }
 

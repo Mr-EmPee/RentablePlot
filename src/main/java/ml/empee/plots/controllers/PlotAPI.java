@@ -7,8 +7,11 @@ import ml.empee.plots.model.entities.Plot;
 import ml.empee.plots.services.PlotService;
 import mr.empee.lightwire.annotations.Singleton;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Singleton
 @RequiredArgsConstructor
@@ -26,31 +29,20 @@ public class PlotAPI {
     return coins.getAmount() * pluginConfig.getCoinValue();
   }
 
-  /**
-   * Add rent to a plot
-   */
-  public Plot addRent(Long plotId, int seconds) {
+  public Plot setRent(Long plotId, UUID owner, long expireEpoch) {
     var plot = plotService.findById(plotId).orElseThrow();
-    if (!plot.isClaimed()) {
-      throw new IllegalArgumentException("Plot " + plotId + " is not claimed");
+    if (plot.isClaimed() && !plot.isMember(owner)) {
+      throw new IllegalArgumentException("The plot " + plotId + " is already claimed and " + owner + " is not a member");
     }
 
-    return plotService.setExpiration(plotId, plot.getSecondsExpireEpoch() + seconds);
+    return plotService.setRent(plotId, owner, expireEpoch);
   }
 
-  public Plot claimPlot(Long plotId, UUID owner) {
-    if (isPlotClaimed(plotId)) {
-      throw new IllegalArgumentException("Plot " + plotId + " is already claimed");
-    }
-
-    return plotService.claim(plotId, owner);
+  public Optional<Plot> getPlot(Long plotId) {
+    return plotService.findById(plotId);
   }
 
-  public boolean isPlotClaimed(Long plotId) {
-    return plotService.findById(plotId).orElseThrow().isClaimed();
-  }
-
-  public boolean isPlotCoin(ItemStack item) {
+  public boolean isPlotCoin(@Nullable ItemStack item) {
     return itemRegistry.plotCoin().isPluginItem(item);
   }
 

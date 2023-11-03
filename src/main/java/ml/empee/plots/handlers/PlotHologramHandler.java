@@ -95,7 +95,7 @@ public class PlotHologramHandler implements Listener {
     holograms.forEach((plotId, hologram) -> {
       var plot = plotService.findById(plotId).orElseThrow();
       if (plot.isClaimed()) {
-        var expireTime = Duration.between(Instant.now(), Instant.ofEpochSecond(plot.getSecondsExpireEpoch()));
+        var expireTime = Duration.between(Instant.now(), Instant.ofEpochMilli(plot.getExpireEpoch()));
         if (plot.isExpired()) {
           expireTime = Duration.ZERO;
         }

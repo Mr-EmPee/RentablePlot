@@ -88,18 +88,11 @@ public class PlotService {
     return plot;
   }
 
-  public Plot setExpiration(Long plotId, Long secondsExpireEpoch) {
+  public Plot setRent(Long plotId, UUID owner, Long expireEpoch) {
     var plot = findById(plotId).orElseThrow();
-    if (plot.getOwner().isEmpty()) {
-      throw new IllegalArgumentException("Plot must be claimed");
-    }
-
-    return plotCache.save(plot.withSecondsExpireEpoch(secondsExpireEpoch));
-  }
-
-  public Plot claim(Long plotId, UUID owner) {
-    var plot = findById(plotId).orElseThrow();
-    return plotCache.save(plot.withOwner(Optional.of(owner)));
+    return plotCache.save(
+        plot.withOwner(Optional.of(owner)).withExpireEpoch(expireEpoch)
+    );
   }
 
   public Plot unclaim(Long plotId) {
@@ -107,7 +100,7 @@ public class PlotService {
 
     return plotCache.save(
         plot.withOwner(Optional.empty())
-            .withSecondsExpireEpoch(0L)
+            .withExpireEpoch(0L)
             .withMembers(Collections.emptyList())
             .withChests(Collections.emptyMap())
     );

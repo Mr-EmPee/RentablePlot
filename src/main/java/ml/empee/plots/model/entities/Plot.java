@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
 
@@ -32,7 +31,7 @@ public class Plot implements Entity {
   Optional<UUID> owner = Optional.empty();
 
   @Builder.Default
-  Long secondsExpireEpoch = 0L;
+  Long expireEpoch = 0L;
 
   @Builder.Default
   List<UUID> members = Collections.emptyList();
@@ -57,7 +56,7 @@ public class Plot implements Entity {
   }
 
   public boolean isExpired() {
-    return TimeUnit.SECONDS.toMillis(secondsExpireEpoch) <= System.currentTimeMillis();
+    return expireEpoch <= System.currentTimeMillis();
   }
 
   public Location getStart() {
