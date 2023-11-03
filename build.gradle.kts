@@ -13,7 +13,7 @@ plugins {
 }
 
 if (project.hasProperty("tag")) {
-  version = project.property("tag")
+  version = project.property("tag")!!
 } else {
   version = "develop"
 }
@@ -45,7 +45,7 @@ dependencies {
   compileOnly("com.github.decentsoftware-eu:decentholograms:2.8.4")
 
   // Core depends
-  implementation("com.github.Mr-EmPee:LightWire:1.0.0")
+  implementation("com.github.Mr-EmPee:LightWire:1.1.0")
 
   implementation("me.lucko:commodore:2.2") {
     exclude("com.mojang", "brigadier")
@@ -55,8 +55,8 @@ dependencies {
   implementation("cloud.commandframework:cloud-annotations:1.8.3")
 
   // Utilities
-  implementation("com.github.Mr-EmPee:SimpleMenu:0.0.6")
-  implementation("com.github.Mr-EmPee:ItemBuilder:1.1.2")
+  implementation("com.github.Mr-EmPee:SimpleMenu:0.3.0")
+  implementation("com.github.Mr-EmPee:ItemBuilder:1.1.3")
   implementation("com.github.cryptomorin:XSeries:9.4.0") { isTransitive = false }
 
   //implementation("org.cloudburstmc:nbt:3.0.1.Final")
@@ -85,6 +85,7 @@ tasks {
 
   compileJava {
     sourceCompatibility = "11"
+    targetCompatibility = "11"
 
     options.encoding = Charsets.UTF_8.name()
     options.compilerArgs.add("-parameters")
@@ -92,11 +93,5 @@ tasks {
 
   runServer {
     version.set("1.19.4")
-  }
-}
-
-java {
-  toolchain {
-    languageVersion.set(JavaLanguageVersion.of(17))
   }
 }
