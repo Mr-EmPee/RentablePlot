@@ -55,7 +55,7 @@ dependencies {
   implementation("cloud.commandframework:cloud-annotations:1.8.3")
 
   // Utilities
-  implementation("com.github.Mr-EmPee:SimpleMenu:0.3.0")
+  implementation("com.github.Mr-EmPee:SimpleMenu:0.3.1")
   implementation("com.github.Mr-EmPee:ItemBuilder:1.1.3")
   implementation("com.github.cryptomorin:XSeries:9.4.0") { isTransitive = false }
 
