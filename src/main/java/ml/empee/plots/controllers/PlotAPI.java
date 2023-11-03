@@ -29,10 +29,17 @@ public class PlotAPI {
     return coins.getAmount() * pluginConfig.getCoinValue();
   }
 
+  //TODO: Max Rent time!
   public Plot setRent(Long plotId, UUID owner, long expireEpoch) {
     var plot = plotService.findById(plotId).orElseThrow();
-    if (plot.isClaimed() && !plot.isMember(owner)) {
-      throw new IllegalArgumentException("The plot " + plotId + " is already claimed and " + owner + " is not a member");
+    if (plot.isClaimed()) {
+      if (!plot.isMember(owner)) {
+        throw new IllegalArgumentException("The plot " + plotId + " is already claimed and " + owner + " is not a member");
+      }
+
+      if (!owner.equals(plot.getOwner().orElseThrow())) {
+        throw new IllegalArgumentException("Can't change owner of " + plotId);
+      }
     }
 
     return plotService.setRent(plotId, owner, expireEpoch);
