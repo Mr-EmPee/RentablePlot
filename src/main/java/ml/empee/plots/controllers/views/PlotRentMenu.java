@@ -1,5 +1,8 @@
 package ml.empee.plots.controllers.views;
 
+import ml.empee.plots.config.LangConfig;
+import ml.empee.plots.controllers.PlotAPI;
+import ml.empee.plots.utils.Logger;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -7,11 +10,12 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
 
 import lombok.RequiredArgsConstructor;
-import ml.empee.plots.controllers.PlotController;
-import ml.empee.plots.model.entities.Plot;
+import ml.empee.plots.controllers.commands.PlotCommand;
 import ml.empee.simplemenu.model.menus.ChestMenu;
 import mr.empee.lightwire.annotations.Instance;
 import mr.empee.lightwire.annotations.Singleton;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Menu to claim a cell
@@ -24,7 +28,9 @@ public class PlotRentMenu {
   @Instance
   private static PlotRentMenu instance;
 
-  private final PlotController plotController;
+  private final PlotAPI plotCommand;
+
+  private final LangConfig langConfig;
 
   public static void open(Player player, Long plotId) {
     instance.create(player, plotId).open();
@@ -76,7 +82,16 @@ public class PlotRentMenu {
         return;
       }
 
-      plotController.addRent(player, plotId, coins);
+      var secondsBought = plotCommand.convertCoinsToSeconds(coins);
+      if (plotCommand.isPlotClaimed(plotId)) {
+        plotCommand.addRent(plotId, secondsBought);
+        Logger.log(player, langConfig.translate("plot.rent.add", TimeUnit.SECONDS.toHours(secondsBought)));
+      } else {
+        plotCommand.claimPlot(plotId, player.getUniqueId());
+        plotCommand.addRent(plotId, secondsBought);
+        Logger.log(player, langConfig.translate("plot.claimed"));
+      }
+
     }
   }
 

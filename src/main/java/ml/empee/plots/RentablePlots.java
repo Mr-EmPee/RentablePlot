@@ -1,13 +1,12 @@
 package ml.empee.plots;
 
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.val;
 import ml.empee.plots.config.CommandsConfig;
 import ml.empee.plots.config.LangConfig;
 import ml.empee.plots.config.client.DbClient;
-import ml.empee.plots.controllers.Controller;
+import ml.empee.plots.controllers.commands.Command;
 import ml.empee.plots.utils.Logger;
 import ml.empee.simplemenu.SimpleMenu;
 import mr.empee.lightwire.Lightwire;
@@ -41,7 +40,7 @@ public final class RentablePlots extends JavaPlugin {
 
   private void registerCommands() {
     var commandManager = iocContainer.getBean(CommandsConfig.class);
-    iocContainer.getAllBeans(Controller.class).forEach(
+    iocContainer.getAllBeans(Command.class).forEach(
         c -> commandManager.register(c)
     );
   }
