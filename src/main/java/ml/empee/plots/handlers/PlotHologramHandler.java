@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.collect.BiMap;
@@ -42,6 +43,17 @@ public class PlotHologramHandler implements Listener {
     Bukkit.getScheduler().runTaskTimer(plugin, t -> {
       refreshHolograms();
     }, 0, 10);
+  }
+
+  @EventHandler
+  public void onPluginDisable(PluginDisableEvent event) {
+    if (!event.getPlugin().equals(plugin)) {
+      return;
+    }
+
+    holograms.values().forEach(
+        hologram -> DHAPI.removeHologram(hologram.getId())
+    );
   }
 
   @EventHandler
