@@ -28,7 +28,6 @@ import mr.empee.lightwire.annotations.Singleton;
 public class PlotCommand implements Command {
 
   private final ItemRegistry itemRegistry;
-  private final PluginConfig pluginConfig;
   private final PlotService plotService;
   private final LangConfig langConfig;
 
