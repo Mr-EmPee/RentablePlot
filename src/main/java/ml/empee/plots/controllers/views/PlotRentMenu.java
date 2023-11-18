@@ -4,8 +4,7 @@ import com.cryptomorin.xseries.XMaterial;
 import lombok.RequiredArgsConstructor;
 import ml.empee.itembuilder.ItemBuilder;
 import ml.empee.plots.config.LangConfig;
-import ml.empee.plots.controllers.PlotAPI;
-import ml.empee.plots.utils.Logger;
+import ml.empee.plots.controllers.PlotController;
 import ml.empee.simplemenu.model.GItem;
 import ml.empee.simplemenu.model.menus.DispenserMenu;
 import mr.empee.lightwire.annotations.Instance;
@@ -29,7 +28,7 @@ public class PlotRentMenu {
   @Instance
   private static PlotRentMenu instance;
 
-  private final PlotAPI plotAPI;
+  private final PlotController plotAPI;
 
   private final LangConfig langConfig;
 
@@ -106,14 +105,12 @@ public class PlotRentMenu {
 
       var plot = plotAPI.getPlot(plotId).orElseThrow();
       var secondsBought = plotAPI.convertCoinsToSeconds(coins);
+      var expireEpoch = plot.getExpireEpoch() + TimeUnit.SECONDS.toMillis(secondsBought);
       if (plot.isClaimed()) {
-        plotAPI.setRent(plotId, plot.getOwner().orElseThrow(), plot.getExpireEpoch() + TimeUnit.SECONDS.toMillis(secondsBought));
-        Logger.log(player, langConfig.translate("plot.rent.add", TimeUnit.SECONDS.toHours(secondsBought)));
+        plotAPI.setPlotExpireEpoch(player, plotId, expireEpoch);
       } else {
-        plotAPI.setRent(plotId, player.getUniqueId(), System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(secondsBought));
-        Logger.log(player, langConfig.translate("plot.claimed"));
+        plotAPI.claimPlot(player, plotId, expireEpoch);
       }
-
     }
   }
 

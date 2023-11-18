@@ -101,7 +101,7 @@ public class PlotHologramHandler implements Listener {
         }
         
         var placeholders = new Object[] {
-            Bukkit.getOfflinePlayer(plot.getOwner().get()).getName(),
+            Bukkit.getOfflinePlayer(plot.getOwner()).getName(),
             1, 5,
             expireTime.toDaysPart(), expireTime.toHoursPart(), expireTime.toMinutesPart()
         };

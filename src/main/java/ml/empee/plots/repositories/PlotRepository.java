@@ -49,7 +49,7 @@ public class PlotRepository extends AbstractRepository<Plot> {
         .start(parseLocation(rs.getString("start")))
         .end(parseLocation(rs.getString("end")))
         .hologramLocation(parseLocation(rs.getString("hologramLocation")))
-        .owner(owner == null ? Optional.empty() : Optional.of(UUID.fromString(owner)))
+        .owner(owner == null ? null : UUID.fromString(owner))
         .members(parseCollection(rs.getString("members"), UUID::fromString))
         .chests(parseMap(rs.getString("chests"), UUID::fromString, Integer::parseInt))
         .expireEpoch(rs.getLong("expireTime"))
@@ -61,7 +61,7 @@ public class PlotRepository extends AbstractRepository<Plot> {
     stm.setLong(1, data.getId());
     stm.setString(2, parseLocation(data.getStart()));
     stm.setString(3, parseLocation(data.getEnd()));
-    stm.setString(4, data.getOwner().map(UUID::toString).orElse(null));
+    stm.setString(4, data.getOwner() == null ? null : data.getOwner().toString());
     stm.setString(5, parseCollection(data.getMembers(), UUID::toString));
     stm.setLong(6, data.getExpireEpoch());
     stm.setString(7, parseMap(data.getChests(), UUID::toString, Object::toString));

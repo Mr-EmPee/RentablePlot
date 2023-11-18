@@ -27,8 +27,7 @@ public class Plot implements Entity {
   Location end;
   Location hologramLocation;
 
-  @Builder.Default
-  Optional<UUID> owner = Optional.empty();
+  UUID owner;
 
   @Builder.Default
   Long expireEpoch = 0L;
@@ -48,11 +47,11 @@ public class Plot implements Entity {
   }
 
   public boolean isMember(UUID player) {
-    return owner.map(o -> o.equals(player)).orElse(false) || members.contains(player);
+    return player.equals(owner) || members.contains(player);
   }
 
   public boolean isClaimed() {
-    return owner.isPresent();
+    return owner != null;
   }
 
   public boolean isExpired() {

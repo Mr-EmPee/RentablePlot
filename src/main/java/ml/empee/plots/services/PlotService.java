@@ -88,10 +88,17 @@ public class PlotService {
     return plot;
   }
 
-  public Plot setRent(Long plotId, UUID owner, Long expireEpoch) {
+  public Plot setExpireEpoch(Long plotId, Long expireEpoch) {
     var plot = findById(plotId).orElseThrow();
     return plotCache.save(
-        plot.withOwner(Optional.of(owner)).withExpireEpoch(expireEpoch)
+        plot.withExpireEpoch(expireEpoch)
+    );
+  }
+
+  public Plot claim(Long plotId, UUID owner) {
+    var plot = findById(plotId).orElseThrow();
+    return plotCache.save(
+        plot.withOwner(owner)
     );
   }
 
@@ -99,7 +106,7 @@ public class PlotService {
     var plot = findById(plotId).orElseThrow();
 
     return plotCache.save(
-        plot.withOwner(Optional.empty())
+        plot.withOwner(null)
             .withExpireEpoch(0L)
             .withMembers(Collections.emptyList())
             .withChests(Collections.emptyMap())

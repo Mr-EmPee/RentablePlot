@@ -29,7 +29,7 @@ public class PlotExpirationHandler {
         continue;
       }
 
-      var owner = Bukkit.getOfflinePlayer(plot.getOwner().orElseThrow());
+      var owner = Bukkit.getOfflinePlayer(plot.getOwner());
       if (owner.isOnline()) {
         Logger.log(owner.getPlayer(), langConfig.translate("plot.expired"));
       }
