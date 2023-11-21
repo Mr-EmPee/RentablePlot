@@ -25,7 +25,9 @@ plot:
   rent:
     add: "&7You have added &e%1$d&7h to the rent"
     max-rent: "&cYou can't rent the plot for more then 10 days"
-
+  containers:
+    plot-limit: "&cThe plot has too many containers!"
+    player-limit: "&cYou have placed too much containers in this plot!"
 hologram:
   claimed: |
     &7The base is rented by &e%1$s

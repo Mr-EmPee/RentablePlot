@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -54,7 +55,7 @@ public class ObjectConverter {
   /**
    * Parse a string to a collection
    */
-  public static <T> ArrayList<T> parseCollection(String raw, Function<String, T> mapper) {
+  public static <T> List<T> parseCollection(String raw, Function<String, T> mapper) {
     return Arrays.stream(gson.fromJson(raw, String[].class))
         .map(mapper)
         .collect(Collectors.toCollection(ArrayList::new));

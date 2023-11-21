@@ -105,11 +105,11 @@ public class PlotRentMenu {
 
       var plot = plotAPI.getPlot(plotId).orElseThrow();
       var secondsBought = plotAPI.convertCoinsToSeconds(coins);
-      var expireEpoch = plot.getExpireEpoch() + TimeUnit.SECONDS.toMillis(secondsBought);
+      var millisBought = TimeUnit.SECONDS.toMillis(secondsBought);
       if (plot.isClaimed()) {
-        plotAPI.setPlotExpireEpoch(player, plotId, expireEpoch);
+        plotAPI.setPlotExpireEpoch(player, plotId, plot.getExpireEpoch() + millisBought);
       } else {
-        plotAPI.claimPlot(player, plotId, expireEpoch);
+        plotAPI.claimPlot(player, plotId, System.currentTimeMillis() + millisBought);
       }
     }
   }

@@ -4,6 +4,7 @@ import ml.empee.plots.config.LangConfig;
 import ml.empee.plots.constants.ItemRegistry;
 import ml.empee.plots.handlers.PlotExpirationHandler;
 import ml.empee.plots.handlers.PlotHologramHandler;
+import ml.empee.plots.handlers.PlotProtectionHandler;
 import ml.empee.plots.handlers.PlotSelectionHandler;
 import ml.empee.plots.model.entities.Plot;
 import ml.empee.plots.repositories.memory.PlotMemoryCache;
@@ -12,6 +13,7 @@ import mr.empee.lightwire.annotations.Singleton;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Service layer for plots
@@ -78,8 +81,8 @@ public class PlotService {
   public Plot create(Location hologramLocation, Location start, Location end) {
     var plot = plotCache.save(
         Plot.builder()
-            .start(start)
-            .end(end)
+            .start(Vector.getMinimum(start.toVector(), end.toVector()).toLocation(start.getWorld()))
+            .end(Vector.getMaximum(start.toVector(), end.toVector()).toLocation(start.getWorld()))
             .hologramLocation(hologramLocation)
             .build()
     );
@@ -109,7 +112,6 @@ public class PlotService {
         plot.withOwner(null)
             .withExpireEpoch(0L)
             .withMembers(Collections.emptyList())
-            .withChests(Collections.emptyMap())
     );
   }
 
@@ -129,20 +131,35 @@ public class PlotService {
     return plotCache.save(plot.withMembers(members));
   }
 
-  public Plot addChest(Long plotId, UUID player) {
+  public Plot addContainer(Long plotId, UUID player, Location location) {
     var plot = findById(plotId).orElseThrow();
-    var chests = new HashMap<>(plot.getChests());
-    chests.compute(player, (k, v) -> v == null ? 1 : v + 1);
+    var plotContainers = new HashMap<>(plot.getContainers());
 
-    return plotCache.save(plot.withChests(chests));
+    plotContainers.merge(player, Collections.singletonList(location), (oldValue, newValue) -> {
+      var result = new ArrayList<Location>();
+      result.addAll(oldValue);
+      result.addAll(newValue);
+      return result;
+    });
+
+    return plotCache.save(plot.withContainers(plotContainers));
   }
 
-  public Plot removeChest(Long plotId, UUID player) {
+  public Plot removeContainer(Long plotId, Location location) {
     var plot = findById(plotId).orElseThrow();
-    var chests = new HashMap<>(plot.getChests());
-    chests.compute(player, (k, v) -> v == null ? 0 : v - 1);
+    var plotContainers = new HashMap<>(plot.getContainers());
 
-    return plotCache.save(plot.withChests(chests));
+    plotContainers.entrySet().forEach(
+        e -> {
+          if (e.getValue().contains(location)) {
+            var containers = new ArrayList<>(e.getValue());
+            containers.remove(location);
+            e.setValue(containers);
+          }
+        }
+    );
+
+    return plotCache.save(plot.withContainers(plotContainers));
   }
 
 }

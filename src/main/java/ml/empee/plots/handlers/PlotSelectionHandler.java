@@ -39,8 +39,13 @@ public class PlotSelectionHandler implements Listener {
       return;
     }
 
-    Logger.log(event.getPlayer(), "&aPlot corner selected");
-    selector.select(event.getPlayer().getUniqueId(), event.getClickedBlock().getLocation());
+    var loc = event.getClickedBlock().getLocation();
+    Logger.log(
+        event.getPlayer(), "&aCorner X: %d, Y: %d Z: %d selected",
+        loc.getBlockX(), loc.getBlockY(), loc.getBlockZ()
+    );
+
+    selector.select(event.getPlayer().getUniqueId(), loc);
   }
   
 }

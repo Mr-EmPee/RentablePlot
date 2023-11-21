@@ -12,5 +12,6 @@ public final class Permissions {
 
   private static final String PREFIX = "demoplugin.";
   public static final String ADMIN = PREFIX + "admin";
+  public static final String BYPASS_CONTAINERS = PREFIX + "bypass.containers";
 
 }

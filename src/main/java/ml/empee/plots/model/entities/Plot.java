@@ -3,7 +3,6 @@ package ml.empee.plots.model.entities;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -36,14 +35,24 @@ public class Plot implements Entity {
   List<UUID> members = Collections.emptyList();
 
   @Builder.Default
-  Map<UUID, Integer> chests = Collections.emptyMap();
+  Map<UUID, List<Location>> containers = Collections.emptyMap();
 
   public List<UUID> getMembers() {
     return Collections.unmodifiableList(members);
   }
 
-  public Map<UUID, Integer> getChests() {
-    return Collections.unmodifiableMap(chests);
+  public List<Location> getContainers(UUID player) {
+    return Collections.unmodifiableList(
+        containers.getOrDefault(player, Collections.emptyList())
+    );
+  }
+
+  public Map<UUID, List<Location>> getContainers() {
+    return Collections.unmodifiableMap(containers);
+  }
+
+  public Integer getTotalContainers() {
+    return containers.values().stream().mapToInt(List::size).sum();
   }
 
   public boolean isMember(UUID player) {

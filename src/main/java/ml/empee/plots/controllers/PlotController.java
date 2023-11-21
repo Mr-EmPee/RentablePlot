@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import ml.empee.plots.config.LangConfig;
 import ml.empee.plots.config.PluginConfig;
 import ml.empee.plots.constants.ItemRegistry;
+import ml.empee.plots.constants.Permissions;
 import ml.empee.plots.model.entities.Plot;
 import ml.empee.plots.services.PlotService;
 import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +32,35 @@ public class PlotController {
     }
 
     return coins.getAmount() * pluginConfig.getCoinValue();
+  }
+
+  public boolean canBuild(Player sender, Long plotId) {
+    var plot = plotService.findById(plotId).orElseThrow();
+    return plot.isMember(sender.getUniqueId());
+  }
+
+  @Nullable
+  public Plot addContainer(Player sender, Long plotId, Location container) {
+    var plot = plotService.findById(plotId).orElseThrow();
+
+    if (!sender.hasPermission(Permissions.BYPASS_CONTAINERS)) {
+      if (plot.getTotalContainers() > 25) {
+        Logger.log(sender, langConfig.translate("plot.containers.plot-limit"));
+        return null;
+      }
+
+      if (plot.getContainers(sender.getUniqueId()).size() > 5) {
+        Logger.log(sender, langConfig.translate("plot.containers.player-limit"));
+        return null;
+      }
+    }
+
+    return plotService.addContainer(plotId, sender.getUniqueId(), container);
+  }
+
+  public Plot removeContainer(Player sender, Long plotId, Location container) {
+    var plot = plotService.findById(plotId).orElseThrow();
+    return plotService.removeContainer(plotId, container);
   }
 
   @Nullable
@@ -70,6 +101,10 @@ public class PlotController {
 
   public Optional<Plot> getPlot(Long plotId) {
     return plotService.findById(plotId);
+  }
+
+  public Optional<Plot> findByLocation(Location location) {
+    return plotService.findByLocation(location);
   }
 
   public boolean isPlotCoin(@Nullable ItemStack item) {

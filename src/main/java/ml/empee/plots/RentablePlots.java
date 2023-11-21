@@ -1,5 +1,6 @@
 package ml.empee.plots;
 
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import lombok.val;
@@ -31,6 +32,7 @@ public final class RentablePlots extends JavaPlugin {
 
     loadPrefix();
     registerCommands();
+    registerListeners();
   }
 
   private void loadPrefix() {
@@ -42,6 +44,12 @@ public final class RentablePlots extends JavaPlugin {
     var commandManager = iocContainer.getBean(CommandsConfig.class);
     iocContainer.getAllBeans(Command.class).forEach(
         c -> commandManager.register(c)
+    );
+  }
+
+  private void registerListeners() {
+    iocContainer.getAllBeans(Listener.class).forEach(
+        c -> getServer().getPluginManager().registerEvents(c, this)
     );
   }
 
