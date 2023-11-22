@@ -29,6 +29,9 @@ public class Plot implements Entity {
   UUID owner;
 
   @Builder.Default
+  String plotType = "default";
+
+  @Builder.Default
   Long expireEpoch = 0L;
 
   @Builder.Default

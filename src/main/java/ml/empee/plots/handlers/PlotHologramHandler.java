@@ -94,6 +94,8 @@ public class PlotHologramHandler implements Listener {
   private void refreshHolograms() {
     holograms.forEach((plotId, hologram) -> {
       var plot = plotService.findById(plotId).orElseThrow();
+      var plotType = plotService.findPlotType(plot.getPlotType());
+
       if (plot.isClaimed()) {
         var expireTime = Duration.between(Instant.now(), Instant.ofEpochMilli(plot.getExpireEpoch()));
         if (plot.isExpired()) {
@@ -102,14 +104,14 @@ public class PlotHologramHandler implements Listener {
         
         var placeholders = new Object[] {
             Bukkit.getOfflinePlayer(plot.getOwner()).getName(),
-            1, 5,
+            plot.getMembers().size() + 1, plotType.getMaxMembers(),
             expireTime.toDaysPart(), expireTime.toHoursPart(), expireTime.toMinutesPart()
         };
 
         DHAPI.setHologramLines(hologram, langConfig.translateBlock("hologram.claimed", placeholders));
       } else {
         var placeholders = new Object[] {
-            5
+            plotType.getMaxMembers()
         };
 
         DHAPI.setHologramLines(hologram, langConfig.translateBlock("hologram.unclaimed", placeholders));

@@ -42,14 +42,15 @@ public class PlotController {
   @Nullable
   public Plot addContainer(Player sender, Long plotId, Location container) {
     var plot = plotService.findById(plotId).orElseThrow();
+    var plotType = plotService.findPlotType(plot.getPlotType());
 
     if (!sender.hasPermission(Permissions.BYPASS_CONTAINERS)) {
-      if (plot.getTotalContainers() > 25) {
+      if (plot.getTotalContainers() > plotType.getMaxContainers()) {
         Logger.log(sender, langConfig.translate("plot.containers.plot-limit"));
         return null;
       }
 
-      if (plot.getContainers(sender.getUniqueId()).size() > 5) {
+      if (plot.getContainers(sender.getUniqueId()).size() > plotType.getContainersPerPlayer()) {
         Logger.log(sender, langConfig.translate("plot.containers.player-limit"));
         return null;
       }

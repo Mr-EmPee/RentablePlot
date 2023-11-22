@@ -1,12 +1,14 @@
 package ml.empee.plots.services;
 
 import ml.empee.plots.config.LangConfig;
+import ml.empee.plots.config.PluginConfig;
 import ml.empee.plots.constants.ItemRegistry;
 import ml.empee.plots.handlers.PlotExpirationHandler;
 import ml.empee.plots.handlers.PlotHologramHandler;
 import ml.empee.plots.handlers.PlotProtectionHandler;
 import ml.empee.plots.handlers.PlotSelectionHandler;
 import ml.empee.plots.model.entities.Plot;
+import ml.empee.plots.model.entities.PlotType;
 import ml.empee.plots.repositories.memory.PlotMemoryCache;
 import ml.empee.plots.utils.helpers.Selector.Selection;
 import mr.empee.lightwire.annotations.Singleton;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -31,24 +34,42 @@ import java.util.stream.Stream;
 public class PlotService {
 
   private final PlotMemoryCache plotCache;
+  private final PluginConfig pluginConfig;
   private final PlotHologramHandler hologramHandler;
   private final PlotSelectionHandler selectionHandler;
   private final PlotExpirationHandler expirationHandler;
 
+  private List<PlotType> plotTypes = new ArrayList<>();
+
   /**
    * Create a new PlotService
    */
-  public PlotService(JavaPlugin plugin, ItemRegistry itemRegistry, PlotMemoryCache plotCache, LangConfig langConfig) {
+  public PlotService(
+      JavaPlugin plugin, ItemRegistry itemRegistry,
+      PlotMemoryCache plotCache, LangConfig langConfig, PluginConfig pluginConfig
+  ) {
     this.plotCache = plotCache;
 
+    this.pluginConfig = pluginConfig;
     this.hologramHandler = new PlotHologramHandler(plugin, langConfig, this);
     this.expirationHandler = new PlotExpirationHandler(plugin, langConfig, this);
     this.selectionHandler = new PlotSelectionHandler(itemRegistry);
+
+    loadPlotTypes();
 
     plotCache.findAll().forEach(plot -> hologramHandler.spawnHologram(plot.getId(), plot.getHologramLocation()));
 
     Bukkit.getPluginManager().registerEvents(hologramHandler, plugin);
     Bukkit.getPluginManager().registerEvents(selectionHandler, plugin);
+  }
+
+  public void reload() {
+    pluginConfig.reload();
+    loadPlotTypes();
+  }
+
+  public void loadPlotTypes() {
+    plotTypes = pluginConfig.getPlotTypes();
   }
 
   public Collection<Plot> findAll() {
@@ -70,6 +91,12 @@ public class PlotService {
         .filter(p -> p.getStart().getWorld().equals(location.getWorld()))
         .filter(p -> location.toVector().isInAABB(p.getStart().toVector(), p.getEnd().toVector()))
         .findFirst();
+  }
+
+  public PlotType findPlotType(String id) {
+    return plotTypes.stream()
+        .filter(t -> t.getId().equals(id))
+        .findFirst().orElseThrow(() -> new IllegalArgumentException("Unable to find plot type " + id));
   }
 
   public Optional<Plot> findById(Long id) {

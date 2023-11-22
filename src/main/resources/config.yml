@@ -1,0 +1,18 @@
+coin:
+  seconds: 3600
+
+max-rent:
+  seconds: 864000
+
+plots:
+  default:
+    max-members: 5
+    max-per-player-containers: 5
+  mvp:
+    title: "&6&lMVP"
+    max-members: 10
+    max-per-player-containers: 5
+  mvp+:
+    title: "&6&lMVP+"
+    max-members: 15
+    max-per-player-containers: 5

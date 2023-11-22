@@ -1,6 +1,7 @@
 package ml.empee.plots.controllers.commands;
 
 import ml.empee.plots.controllers.commands.Command;
+import ml.empee.plots.services.PlotService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,12 +25,14 @@ public class PluginCommand implements Command {
 
   private final ItemRegistry itemRegistry;
   private final LangConfig langConfig;
+  private final PlotService plotService;
 
   @CommandPermission(Permissions.ADMIN)
   @CommandMethod(COMMAND_PREFIX + "reload")
   public void reload(CommandSender sender) {
     itemRegistry.reload();
     langConfig.reload();
+    plotService.reload();
 
     Logger.log(sender, "&7The plugin has been reloaded");
   }
