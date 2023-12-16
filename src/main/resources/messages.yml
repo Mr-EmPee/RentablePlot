@@ -6,6 +6,7 @@ cmd:
   invalid-sender: "&cInvalid sender type"
   invalid-argument: "&cInvalid argument, %s"
   unknown-exception: "&cAn error has occurred, inform a staff member"
+  self-execution: "&cYou can't execute this command on yourself"
 
 invitations:
   self: "&cYou can't invite yourself!"
@@ -19,7 +20,11 @@ coin:
   lore: "&7Use this item to add 10h to a rent"
 
 plot:
-  not-member: "&cYou are not a member of this plot!"
+  max-members: "&cThis plot reached the max number of members"
+  already-member: "&cAlready a member of this plot"
+  not-owner: "&cYou must be the owner of this plot"
+  not-inside: "&cYou must be inside the plot"
+  not-member: "&cNot a member of this plot!"
   claimed: "&7The plot has been claimed"
   expired: "&cThe plot has expired"
   rent:

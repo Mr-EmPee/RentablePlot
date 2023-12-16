@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -63,5 +64,69 @@ public class PlotCommand implements Command {
     plotService.moveHologram(plot.getId(), new Location(sender.getWorld(), x, y, z));
     Logger.log(sender, "&aHologram moved");
   }
+
+  @CommandMethod(COMMAND_PREFIX + "members add <target>")
+  public void addMember(Player sender, OfflinePlayer target) {
+    if (target.getUniqueId().equals(sender.getUniqueId())) {
+      Logger.log(sender, langConfig.translate("cmd.self-execution"));
+      return;
+    }
+
+    var plot = plotService.findByLocation(sender.getLocation()).orElse(null);
+    if (plot == null) {
+      Logger.log(sender, langConfig.translate("plot.not-inside"));
+      return;
+    }
+
+    boolean isOwner = sender.getUniqueId().equals(plot.getOwner());
+    if (!isOwner) {
+      Logger.log(sender, langConfig.translate("plot.not-owner"));
+      return;
+    }
+
+    boolean isMember= plot.isMember(target.getUniqueId());
+    if (isMember) {
+      Logger.log(sender, langConfig.translate("plot.already-member"));
+      return;
+    }
+
+    var plotType = plotService.findPlotType(plot.getPlotType());
+    if (plot.getMembers().size() >= plotType.getMaxMembers()) {
+      Logger.log(sender, langConfig.translate("plot.max-members"));
+      return;
+    }
+
+    plotService.addMember(plot.getId(), target.getUniqueId());
+  }
+
+  @CommandMethod(COMMAND_PREFIX + "members remove <target>")
+  public void removeMember(Player sender, OfflinePlayer target) {
+    if (target.getUniqueId().equals(sender.getUniqueId())) {
+      Logger.log(sender, langConfig.translate("cmd.self-execution"));
+      return;
+    }
+
+    var plot = plotService.findByLocation(sender.getLocation()).orElse(null);
+    if (plot == null) {
+      Logger.log(sender, langConfig.translate("plot.not-inside"));
+      return;
+    }
+
+    boolean isOwner = sender.getUniqueId().equals(plot.getOwner());
+    if (!isOwner) {
+      Logger.log(sender, langConfig.translate("plot.not-owner"));
+      return;
+    }
+
+    boolean isMember = plot.isMember(target.getUniqueId());
+    if (!isMember) {
+      Logger.log(sender, langConfig.translate("plot.not-member"));
+      return;
+    }
+
+    plotService.removeMember(plot.getId(), target.getUniqueId());
+  }
+
+  //TODO DELETE
 
 }
