@@ -45,7 +45,7 @@ public class PluginConfig extends AbstractConfig {
     return PlotType.builder()
         .id(config.getName())
         .maxMembers(config.getInt("max-members", 5))
-        .title(config.getString("title"))
+        .title(config.getString("title", ""))
         .containersPerPlayer(config.getInt("max-per-player-containers", 5))
         .build();
   }

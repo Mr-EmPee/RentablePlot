@@ -103,6 +103,7 @@ public class PlotHologramHandler implements Listener {
         }
         
         var placeholders = new Object[] {
+            plotType.getTitle(),
             Bukkit.getOfflinePlayer(plot.getOwner()).getName(),
             plot.getMembers().size() + 1, plotType.getMaxMembers(),
             expireTime.toDaysPart(), expireTime.toHoursPart(), expireTime.toMinutesPart()
@@ -111,6 +112,7 @@ public class PlotHologramHandler implements Listener {
         DHAPI.setHologramLines(hologram, langConfig.translateBlock("hologram.claimed", placeholders));
       } else {
         var placeholders = new Object[] {
+            plotType.getTitle(),
             plotType.getMaxMembers()
         };
 

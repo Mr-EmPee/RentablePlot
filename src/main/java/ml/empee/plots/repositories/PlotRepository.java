@@ -36,7 +36,8 @@ public class PlotRepository extends AbstractRepository<Plot> {
         "members TEXT NOT NULL",
         "expireTime INTEGER NOT NULL",
         "containers TEXT NOT NULL",
-        "hologramLocation TEXT NOT NULL"
+        "hologramLocation TEXT NOT NULL",
+        "plotType TEXT NOT NULL"
     );
   }
 
@@ -52,6 +53,7 @@ public class PlotRepository extends AbstractRepository<Plot> {
         .owner(owner == null ? null : UUID.fromString(owner))
         .members(parseCollection(rs.getString("members"), UUID::fromString))
         .expireEpoch(rs.getLong("expireTime"))
+        .plotType(rs.getString("plotType"))
         .containers(ObjectConverter.parseMap(
             rs.getString("containers"), UUID::fromString,
             v -> ObjectConverter.parseCollection(v, ObjectConverter::parseLocation)
@@ -73,6 +75,7 @@ public class PlotRepository extends AbstractRepository<Plot> {
     );
 
     stm.setString(8, parseLocation(data.getHologramLocation()));
+    stm.setString(9, data.getPlotType());
   }
 
 }
