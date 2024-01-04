@@ -9,6 +9,7 @@ import ml.empee.plots.model.entities.Plot;
 import ml.empee.plots.services.PlotService;
 import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -91,8 +92,17 @@ public class PlotController {
       return null;
     }
 
-    Logger.log(sender, langConfig.translate("plot.member-added", target.getName()));
-    return plotService.addMember(plot.getId(), target.getUniqueId());
+    plot = plotService.addMember(plot.getId(), target.getUniqueId());
+
+    var owner = Bukkit.getOfflinePlayer(plot.getOwner());
+    for (var member : plot.getMembers()) {
+      var player = Bukkit.getOfflinePlayer(member);
+      if (player.isOnline()) {
+        Logger.log(player.getPlayer(), langConfig.translate("plot.member-added", target.getName(), owner.getName()));
+      }
+    }
+
+    return plot;
   }
 
   public Plot removeMember(Player sender, Long plotId, OfflinePlayer target) {
@@ -115,8 +125,17 @@ public class PlotController {
       return null;
     }
 
-    Logger.log(sender, langConfig.translate("plot.member-removed", target.getName()));
-    return plotService.removeMember(plot.getId(), target.getUniqueId());
+    plot = plotService.removeMember(plot.getId(), target.getUniqueId());
+
+    var owner = Bukkit.getOfflinePlayer(plot.getOwner());
+    for (var member : plot.getMembers()) {
+      var player = Bukkit.getOfflinePlayer(member);
+      if (player.isOnline()) {
+        Logger.log(player.getPlayer(), langConfig.translate("plot.member-removed", target.getName(), owner.getName()));
+      }
+    }
+
+    return plot;
   }
 
   @Nullable

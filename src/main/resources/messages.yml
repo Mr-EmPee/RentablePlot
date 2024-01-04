@@ -20,8 +20,8 @@ coin:
   lore: "&7Use this item to add 10h to a rent"
 
 plot:
-  member-added: "&7You have added &e%s&7 to the plot"
-  member-removed: "&7You have removed &e%s&7 from the plot"
+  member-added: "&e%s&7 added to the plot of &e%s"
+  member-removed: "&e%s&7 removed from the plot of &e%s"
   max-members: "&cThis plot reached the max number of members"
   already-member: "&cAlready a member of this plot"
   not-owner: "&cYou must be the owner of this plot"
