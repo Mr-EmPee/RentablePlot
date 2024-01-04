@@ -84,6 +84,18 @@ public class PlotCommand implements Command {
     plotController.addMember(sender, plot.getId(), target);
   }
 
+  @CommandPermission(Permissions.ADMIN)
+  @CommandMethod(COMMAND_PREFIX + "delete")
+  public void addMember(Player sender) {
+    var plot = plotService.findByLocation(sender.getLocation()).orElse(null);
+    if (plot == null) {
+      Logger.log(sender, langConfig.translate("plot.not-inside"));
+      return;
+    }
+
+    plotController.deletePlot(sender, plot.getId());
+  }
+
   @CommandMethod(COMMAND_PREFIX + "members remove <target>")
   public void removeMember(Player sender, @Argument OfflinePlayer target) {
     var plot = plotService.findByLocation(sender.getLocation()).orElse(null);

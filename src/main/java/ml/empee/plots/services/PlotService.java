@@ -1,13 +1,10 @@
 package ml.empee.plots.services;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import ml.empee.plots.config.LangConfig;
 import ml.empee.plots.config.PluginConfig;
 import ml.empee.plots.constants.ItemRegistry;
 import ml.empee.plots.handlers.PlotExpirationHandler;
 import ml.empee.plots.handlers.PlotHologramHandler;
-import ml.empee.plots.handlers.PlotProtectionHandler;
 import ml.empee.plots.handlers.PlotSelectionHandler;
 import ml.empee.plots.model.entities.Plot;
 import ml.empee.plots.model.entities.PlotType;
@@ -26,8 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 /**
  * Service layer for plots
@@ -73,6 +68,14 @@ public class PlotService {
 
   private void loadPlotTypes() {
     plotTypes = pluginConfig.getPlotTypes();
+  }
+
+  public Plot delete(Long plotId) {
+    var plot = plotCache.get(plotId).orElseThrow();
+    hologramHandler.destroyHologram(plotId);
+
+    plotCache.delete(plotId);
+    return plot;
   }
 
   public Collection<Plot> findAll() {

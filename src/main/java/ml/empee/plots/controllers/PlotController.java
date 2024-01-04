@@ -42,6 +42,13 @@ public class PlotController {
     return plot.isMember(sender.getUniqueId());
   }
 
+  public Plot deletePlot(Player sender, Long plotId) {
+    var plot = plotService.delete(plotId);
+    Logger.log(sender, "The plot has been deleted");
+
+    return plot;
+  }
+
   @Nullable
   public Plot addContainer(Player sender, Long plotId, Location container) {
     var plot = plotService.findById(plotId).orElseThrow();

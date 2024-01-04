@@ -45,6 +45,11 @@ public abstract class AbstractMemoryRepository<T extends Entity> {
     return entity;
   }
 
+  public void delete(Long id) {
+    cache.remove(id);
+    repository.delete(id);
+  }
+
   public Optional<T> get(Long id) {
     return Optional.ofNullable(cache.get(id));
   }
