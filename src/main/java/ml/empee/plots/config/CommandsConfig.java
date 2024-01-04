@@ -71,6 +71,10 @@ public class CommandsConfig {
       Logger.log(sender, langConfig.translate("cmd.invalid-argument", e.getCause().getMessage()));
     });
 
+    commandManager.registerExceptionHandler(IllegalArgumentException.class, (sender, e) -> {
+      Logger.log(sender, langConfig.translate("cmd.invalid-argument", e.getMessage()));
+    });
+
     commandManager.registerExceptionHandler(Exception.class, (sender, e) -> {
       Logger.log(sender, langConfig.translate("cmd.unknown-error"));
     });

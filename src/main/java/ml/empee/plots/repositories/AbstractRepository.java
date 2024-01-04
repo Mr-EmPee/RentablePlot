@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import lombok.SneakyThrows;
 import ml.empee.plots.config.client.DbClient;
@@ -65,7 +66,7 @@ public abstract class AbstractRepository<T extends Entity> {
    */
   public CompletableFuture<Void> save(T entity) {
     return CompletableFuture.runAsync(() -> {
-      var values = schema().stream().map(s -> "?").toList();
+      var values = schema().stream().map(s -> "?").collect(Collectors.toList());
       var query = "INSERT OR REPLACE INTO " + table + " VALUES (" + String.join(", ", values) + ");";
       
       try (var stm = client.getJdbcConnection().prepareStatement(query)) {

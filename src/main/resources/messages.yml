@@ -20,6 +20,8 @@ coin:
   lore: "&7Use this item to add 10h to a rent"
 
 plot:
+  member-added: "&7You have added &e%s&7 to the plot"
+  member-removed: "&7You have removed &e%s&7 from the plot"
   max-members: "&cThis plot reached the max number of members"
   already-member: "&cAlready a member of this plot"
   not-owner: "&cYou must be the owner of this plot"
@@ -37,12 +39,12 @@ hologram:
   claimed: |
     %1$s
     &7The base is rented by &e%2$s
-    &7Members &e%2$d&8/&c%3$d
+    &7Members &e%3$d&8/&c%4$d
     &7
-    &7Expire in &e%4$d&7d &e%5$d&7h &e%6$d&7m
+    &7Expire in &e%5$d&7d &e%6$d&7h &e%7$d&7m
   unclaimed: |
     %1$s
     &7This base &ehasn't&7 been rented!
-    &7Capacity &2&l%1$d&7 members
+    &7Capacity &2&l%2$d&7 members
     &7
     &a&lRight-Click&a to rent it

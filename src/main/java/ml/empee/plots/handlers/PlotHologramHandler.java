@@ -94,7 +94,7 @@ public class PlotHologramHandler implements Listener {
   private void refreshHolograms() {
     holograms.forEach((plotId, hologram) -> {
       var plot = plotService.findById(plotId).orElseThrow();
-      var plotType = plotService.findPlotType(plot.getPlotType());
+      var plotType = plotService.findPlotType(plot.getPlotType()).orElseThrow();
 
       if (plot.isClaimed()) {
         var expireTime = Duration.between(Instant.now(), Instant.ofEpochMilli(plot.getExpireEpoch()));

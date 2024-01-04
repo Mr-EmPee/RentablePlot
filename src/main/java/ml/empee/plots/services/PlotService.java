@@ -71,7 +71,7 @@ public class PlotService {
     loadPlotTypes();
   }
 
-  public void loadPlotTypes() {
+  private void loadPlotTypes() {
     plotTypes = pluginConfig.getPlotTypes();
   }
 
@@ -96,10 +96,14 @@ public class PlotService {
         .findFirst();
   }
 
-  public PlotType findPlotType(String id) {
+  public Optional<PlotType> findPlotType(String id) {
     return plotTypes.stream()
         .filter(t -> t.getId().equals(id))
-        .findFirst().orElseThrow(() -> new IllegalArgumentException("Unable to find plot type " + id));
+        .findFirst();
+  }
+
+  public List<PlotType> findAllPlotTypes() {
+    return Collections.unmodifiableList(plotTypes);
   }
 
   public Optional<Plot> findById(Long id) {
@@ -108,12 +112,13 @@ public class PlotService {
         .findFirst();
   }
 
-  public Plot create(Location hologramLocation, Location start, Location end) {
+  public Plot create(Location hologramLocation, Location start, Location end, PlotType plotType) {
     var plot = plotCache.save(
         Plot.builder()
             .start(Vector.getMinimum(start.toVector(), end.toVector()).toLocation(start.getWorld()))
             .end(Vector.getMaximum(start.toVector(), end.toVector()).toLocation(start.getWorld()))
             .hologramLocation(hologramLocation)
+            .plotType(plotType.getId())
             .build()
     );
 

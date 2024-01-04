@@ -1,24 +1,31 @@
 package ml.empee.plots.controllers.commands;
 
-import java.time.Instant;
-import java.util.concurrent.TimeUnit;
-
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import cloud.commandframework.annotations.Argument;
 import cloud.commandframework.annotations.CommandMethod;
 import cloud.commandframework.annotations.CommandPermission;
+import cloud.commandframework.annotations.parsers.Parser;
+import cloud.commandframework.annotations.suggestions.Suggestions;
+import cloud.commandframework.context.CommandContext;
+import cloud.commandframework.exceptions.ArgumentParseException;
+import cloud.commandframework.exceptions.CommandParseException;
+import cloud.commandframework.exceptions.parsing.ParserException;
 import lombok.RequiredArgsConstructor;
 import ml.empee.plots.config.LangConfig;
-import ml.empee.plots.config.PluginConfig;
 import ml.empee.plots.constants.ItemRegistry;
 import ml.empee.plots.constants.Permissions;
+import ml.empee.plots.controllers.PlotController;
+import ml.empee.plots.model.entities.PlotType;
 import ml.empee.plots.services.PlotService;
 import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
 /**
  * Controller for plots
@@ -28,6 +35,7 @@ import mr.empee.lightwire.annotations.Singleton;
 @RequiredArgsConstructor
 public class PlotCommand implements Command {
 
+  private final PlotController plotController;
   private final ItemRegistry itemRegistry;
   private final PlotService plotService;
   private final LangConfig langConfig;
@@ -40,15 +48,15 @@ public class PlotCommand implements Command {
   }
 
   @CommandPermission(Permissions.ADMIN)
-  @CommandMethod(COMMAND_PREFIX + "create")
-  public void createPlot(Player sender) {
+  @CommandMethod(COMMAND_PREFIX + "create <type>")
+  public void createPlot(Player sender, @Argument(defaultValue = "default") PlotType type) {
     var selection = plotService.getSelection(sender.getUniqueId()).orElse(null);
     if (selection == null || !selection.isValid()) {
       Logger.log(sender, "&cYou need to select a region first");
       return;
     }
 
-    plotService.create(sender.getLocation(), selection.getStart(), selection.getEnd());
+    plotService.create(sender.getLocation(), selection.getStart(), selection.getEnd(), type);
     Logger.log(sender, "&aPlot created");
   }
 
@@ -66,67 +74,39 @@ public class PlotCommand implements Command {
   }
 
   @CommandMethod(COMMAND_PREFIX + "members add <target>")
-  public void addMember(Player sender, OfflinePlayer target) {
-    if (target.getUniqueId().equals(sender.getUniqueId())) {
-      Logger.log(sender, langConfig.translate("cmd.self-execution"));
-      return;
-    }
-
+  public void addMember(Player sender, @Argument OfflinePlayer target) {
     var plot = plotService.findByLocation(sender.getLocation()).orElse(null);
     if (plot == null) {
       Logger.log(sender, langConfig.translate("plot.not-inside"));
       return;
     }
 
-    boolean isOwner = sender.getUniqueId().equals(plot.getOwner());
-    if (!isOwner) {
-      Logger.log(sender, langConfig.translate("plot.not-owner"));
-      return;
-    }
-
-    boolean isMember= plot.isMember(target.getUniqueId());
-    if (isMember) {
-      Logger.log(sender, langConfig.translate("plot.already-member"));
-      return;
-    }
-
-    var plotType = plotService.findPlotType(plot.getPlotType());
-    if (plot.getMembers().size() >= plotType.getMaxMembers()) {
-      Logger.log(sender, langConfig.translate("plot.max-members"));
-      return;
-    }
-
-    plotService.addMember(plot.getId(), target.getUniqueId());
+    plotController.addMember(sender, plot.getId(), target);
   }
 
   @CommandMethod(COMMAND_PREFIX + "members remove <target>")
-  public void removeMember(Player sender, OfflinePlayer target) {
-    if (target.getUniqueId().equals(sender.getUniqueId())) {
-      Logger.log(sender, langConfig.translate("cmd.self-execution"));
-      return;
-    }
-
+  public void removeMember(Player sender, @Argument OfflinePlayer target) {
     var plot = plotService.findByLocation(sender.getLocation()).orElse(null);
     if (plot == null) {
       Logger.log(sender, langConfig.translate("plot.not-inside"));
       return;
     }
 
-    boolean isOwner = sender.getUniqueId().equals(plot.getOwner());
-    if (!isOwner) {
-      Logger.log(sender, langConfig.translate("plot.not-owner"));
-      return;
-    }
-
-    boolean isMember = plot.isMember(target.getUniqueId());
-    if (!isMember) {
-      Logger.log(sender, langConfig.translate("plot.not-member"));
-      return;
-    }
-
-    plotService.removeMember(plot.getId(), target.getUniqueId());
+    plotController.removeMember(sender, plot.getId(), target);
   }
 
-  //TODO DELETE
+  @Parser(suggestions = "plotType")
+  public PlotType parsePlotType(CommandContext<CommandSender> sender, Queue<String> input) {
+    return plotService.findPlotType(input.poll()).orElseThrow(
+        () -> new IllegalArgumentException("Unable to find plot type")
+    );
+  }
 
+  @Suggestions("plotType")
+  public List<String> getPlotTypeSuggestion(CommandContext<CommandSender> sender, String input) {
+    return plotService.findAllPlotTypes().stream()
+        .map(PlotType::getId)
+        .filter(p -> p.toLowerCase().startsWith(input.toLowerCase()))
+        .collect(Collectors.toList());
+  }
 }

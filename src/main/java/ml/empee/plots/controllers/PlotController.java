@@ -10,11 +10,13 @@ import ml.empee.plots.services.PlotService;
 import ml.empee.plots.utils.Logger;
 import mr.empee.lightwire.annotations.Singleton;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Singleton
@@ -42,7 +44,7 @@ public class PlotController {
   @Nullable
   public Plot addContainer(Player sender, Long plotId, Location container) {
     var plot = plotService.findById(plotId).orElseThrow();
-    var plotType = plotService.findPlotType(plot.getPlotType());
+    var plotType = plotService.findPlotType(plot.getPlotType()).orElseThrow();
 
     if (!sender.hasPermission(Permissions.BYPASS_CONTAINERS)) {
       if (plot.getTotalContainers() > plotType.getMaxContainers()) {
@@ -60,8 +62,61 @@ public class PlotController {
   }
 
   public Plot removeContainer(Player sender, Long plotId, Location container) {
-    var plot = plotService.findById(plotId).orElseThrow();
     return plotService.removeContainer(plotId, container);
+  }
+
+  public Plot addMember(Player sender, Long plotId, OfflinePlayer target) {
+    if (target.getUniqueId().equals(sender.getUniqueId())) {
+      Logger.log(sender, langConfig.translate("cmd.self-execution"));
+      return null;
+    }
+
+    var plot = plotService.findById(plotId).orElseThrow();
+
+    boolean isOwner = sender.getUniqueId().equals(plot.getOwner());
+    if (!isOwner) {
+      Logger.log(sender, langConfig.translate("plot.not-owner"));
+      return null;
+    }
+
+    boolean isMember= plot.isMember(target.getUniqueId());
+    if (isMember) {
+      Logger.log(sender, langConfig.translate("plot.already-member"));
+      return null;
+    }
+
+    var plotType = plotService.findPlotType(plot.getPlotType()).orElseThrow();
+    if (plot.getMembers().size() >= plotType.getMaxMembers()) {
+      Logger.log(sender, langConfig.translate("plot.max-members"));
+      return null;
+    }
+
+    Logger.log(sender, langConfig.translate("plot.member-added", target.getName()));
+    return plotService.addMember(plot.getId(), target.getUniqueId());
+  }
+
+  public Plot removeMember(Player sender, Long plotId, OfflinePlayer target) {
+    if (target.getUniqueId().equals(sender.getUniqueId())) {
+      Logger.log(sender, langConfig.translate("cmd.self-execution"));
+      return null;
+    }
+
+    var plot = plotService.findById(plotId).orElseThrow();
+
+    boolean isOwner = sender.getUniqueId().equals(plot.getOwner());
+    if (!isOwner) {
+      Logger.log(sender, langConfig.translate("plot.not-owner"));
+      return null;
+    }
+
+    boolean isMember = plot.isMember(target.getUniqueId());
+    if (!isMember) {
+      Logger.log(sender, langConfig.translate("plot.not-member"));
+      return null;
+    }
+
+    Logger.log(sender, langConfig.translate("plot.member-removed", target.getName()));
+    return plotService.removeMember(plot.getId(), target.getUniqueId());
   }
 
   @Nullable
